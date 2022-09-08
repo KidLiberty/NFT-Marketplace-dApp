@@ -24,7 +24,7 @@ const MenuItems = ({ isMobile, active, setActive }) => {
   return (
     <ul
       className={`list-none flexCenter flex-row ${
-        isMobile && 'flex-col h-full'
+        isMobile ? 'flex-col h-full' : ''
       }`}
     >
       {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => {
@@ -132,7 +132,7 @@ const Navbar = () => {
       <div className='hidden md:flex ml-2'>
         {isOpen ? (
           <Image
-            className={theme === 'light' && 'filter invert'}
+            className={theme === 'light' ? 'filter invert' : ''}
             src={images.cross}
             objectFit='contain'
             width={22}
@@ -144,7 +144,7 @@ const Navbar = () => {
           />
         ) : (
           <Image
-            className={theme === 'light' && 'filter invert'}
+            className={theme === 'light' ? 'filter invert' : ''}
             src={images.menu}
             objectFit='contain'
             width={25}
@@ -159,7 +159,7 @@ const Navbar = () => {
 
       {isOpen && (
         <div className='fixed inset-0 top-65 dark:bg-nft-dark bg-white z-10 nav-h flex justify-between flex-col'>
-          <div className='p-4'>
+          <div className='flex-1 p-4'>
             <MenuItems active={active} setActive={setActive} isMobile />
           </div>
           <div className='p-4 border-t dark:border-nft-black-1 border-nft-gray-1'>

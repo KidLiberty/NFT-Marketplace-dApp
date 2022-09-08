@@ -87,10 +87,9 @@ const Footer = () => {
               images.discord
             ].map((item, i) => {
               return (
-                <div className='mx-2 cursor-pointer'>
+                <div key={i} className='mx-2 cursor-pointer'>
                   <Image
-                    key={i}
-                    className={theme === 'light' && 'filter invert'}
+                    className={theme === 'light' ? 'filter invert' : ''}
                     src={item}
                     objectFit='contain'
                     height={24}
