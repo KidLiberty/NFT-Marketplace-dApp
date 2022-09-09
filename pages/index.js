@@ -10,7 +10,7 @@ const Home = () => {
   const [hideButton, setHideButton] = useState(false)
   const parentRef = useRef(null)
   const scrollRef = useRef(null)
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
 
   const handleScroll = direction => {
     const { current } = scrollRef
