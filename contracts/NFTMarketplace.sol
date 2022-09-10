@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-import "@openszeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
@@ -17,7 +17,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
     address payable owner;
 
-    mapping(uint256 => marketItem) private idToMarketItem;
+    mapping(uint256 => MarketItem) private idToMarketItem;
 
     struct MarketItem {
         uint256 marketId;
@@ -27,7 +27,7 @@ contract NFTMarketplace is ERC721URIStorage {
         bool sold;
     }
 
-    event marketItemCreated (
+    event MarketItemCreated (
         uint256 indexed marketId,
         address payable seller,
         address payable owner,
@@ -35,7 +35,7 @@ contract NFTMarketplace is ERC721URIStorage {
         bool sold
     );
 
-    constructor() {
+    constructor() ERC721("Metaverse tokens", "METT") {
         owner = payable(msg.sender);
     }
 
@@ -55,7 +55,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
         uint256 newTokenId = _tokenIds.current();
         _mint(msg.sender, newTokenId);
-        _setTokenURI(_newTokenId, tokenURI);
+        _setTokenURI(newTokenId, tokenURI);
 
         createMarketItem(newTokenId, price);
 
@@ -64,7 +64,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
     function createMarketItem(uint256 tokenId, uint256 price) private {
         require(price > 0, "Price must be at least 1.");
-        require(msg.value == _listingPrice, "Price must be equal to listing price.");
+        require(msg.value == listingPrice, "Price must be equal to listing price.");
     
         idToMarketItem[tokenId] = MarketItem(
             tokenId,
@@ -77,7 +77,7 @@ contract NFTMarketplace is ERC721URIStorage {
         // Transfer ownership of NFT to designated contract
         _transfer(msg.sender, address(this), tokenId);
 
-        emit marketItemCreated(marketId, seller, owner, price, sold);(tokenId, msg.sender, address(this), price, false);
+        emit MarketItemCreated(tokenId, payable(msg.sender), payable(address(this)), price, false);
     }
 
     function resellToken(uint256 tokenId, uint256 price) public payable {
@@ -110,6 +110,82 @@ contract NFTMarketplace is ERC721URIStorage {
 
         payable(owner).transfer(listingPrice);
         payable(idToMarketItem[tokenId].seller).transfer(msg.value);
+    }
+
+    // Returns items belonging only to the marketplace
+    function fetchMarketItems() public view returns (MarketItem[] memory) {
+        uint itemCount = _tokenIds.current();
+        uint unsoldItemCount = _tokenIds.current() - _itemsSold.current();
+        uint currentIndex = 0;
+
+        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+
+        for(uint i = 0; i < itemCount; i++) {
+            if(idToMarketItem[i + 1].owner == address(this)) {
+                uint currentId = i + 1;
+
+                MarketItem storage currentItem = idToMarketItem[currentId];
+
+                items[currentIndex] = currentItem;
+
+                currentIndex += 1;
+            }
+        }
+        return items;
+    }
+
+    function fetchMyNFTs() public view returns (MarketItem[] memory) {
+        uint totalItemCount = _tokenIds.current();
+        uint itemCount = 0;
+        uint currentIndex = 0;
+
+        for(uint i = 0; i < totalItemCount; i++) {
+            if(idToMarketItem[i + 1].owner == msg.sender) {
+                itemCount += 1;
+            }       
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+
+        for(uint i = 0; i < totalItemCount; i++) {
+            if(idToMarketItem[i + 1].owner == msg.sender) {
+                uint currentId = i + 1;
+
+                MarketItem storage currentItem = idToMarketItem[currentId];
+
+                items[currentIndex] = currentItem;
+
+                currentIndex += 1;
+            }
+        }
+        return items;
+    }
+
+    function fetchItemsListed () public view returns(MarketItem[] memory) {
+        uint totalItemCount = _tokenIds.current();
+        uint itemCount = 0;
+        uint currentIndex = 0;
+
+        for(uint i = 0; i < totalItemCount; i++) {
+            if(idToMarketItem[i + 1].seller == msg.sender) {
+                itemCount += 1;
+            }       
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+
+        for(uint i = 0; i < totalItemCount; i++) {
+            if(idToMarketItem[i + 1].seller == msg.sender) {
+                uint currentId = i + 1;
+
+                MarketItem storage currentItem = idToMarketItem[currentId];
+
+                items[currentIndex] = currentItem;
+
+                currentIndex += 1;
+            }
+        }
+        return items;
     }
 
 }
