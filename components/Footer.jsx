@@ -30,18 +30,20 @@ const Footer = () => {
     <footer className='flexCenter flex-col border-t dark:border-nft-black-1 border-nft-gray-1 sm:py-8 py-16'>
       <div className='w-full minmd:w-4/5 flex flex-row md:flex-col sm:px-4 px-16'>
         <div className='flexStart flex-1 flex-col'>
-          <div className='flexCenter cursor-pointer'>
-            <Image
-              src={images.logo02}
-              objectFit='contain'
-              width={32}
-              height={32}
-              alt='logo'
-            />
-            <p className='dark:text-white text-nft-black-1 font-semibold text-lg ml-2'>
-              OpenLake
-            </p>
-          </div>
+          <Link href='/'>
+            <div className='flexCenter cursor-pointer'>
+              <Image
+                src={images.logo02}
+                objectFit='contain'
+                width={32}
+                height={32}
+                alt='logo'
+              />
+              <p className='dark:text-white text-nft-black-1 font-semibold text-lg ml-2'>
+                OpenLake
+              </p>
+            </div>
+          </Link>
           <p className='font-poppins font-semibold dark:text-white text-nft-black-1 text-base mt-6'>
             Get the latest updates:
           </p>
