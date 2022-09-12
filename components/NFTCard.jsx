@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { NFTContext } from '../context/NFTContext'
 
 import images from '../assets'
+import { shortenAddress } from '../utils/shortenAddress'
 
 const NFTCard = ({ nft }) => {
   const { nftCurrency } = useContext(NFTContext)
@@ -31,7 +32,7 @@ const NFTCard = ({ nft }) => {
               <span className='normal'> {nftCurrency}</span>
             </p>
             <p className='font-poppins font-semibold dark:text-white text-nft-black-1 text-xs minlg:text-lg'>
-              {nft.sellerAddress}
+              {nft.seller.length > 10 ? shortenAddress(nft.seller) : nft.seller}
             </p>
           </div>
         </div>

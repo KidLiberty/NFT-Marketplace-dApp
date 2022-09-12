@@ -20,7 +20,7 @@ contract NFTMarketplace is ERC721URIStorage {
     mapping(uint256 => MarketItem) private idToMarketItem;
 
     struct MarketItem {
-        uint256 marketId;
+        uint256 tokenId;
         address payable seller;
         address payable owner;
         uint256 price;
@@ -28,7 +28,7 @@ contract NFTMarketplace is ERC721URIStorage {
     }
 
     event MarketItemCreated (
-        uint256 indexed marketId,
+        uint256 indexed tokenId,
         address payable seller,
         address payable owner,
         uint256 price,

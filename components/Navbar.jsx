@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import images from '../assets'
 import { Button } from './'
+import { NFTContext } from '../context/NFTContext'
 
 const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
   const generateLink = i => {
@@ -13,7 +14,7 @@ const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
       case 0:
         return '/'
       case 1:
-        return '/created-nfts'
+        return '/listed-nfts'
       case 2:
         return '/my-nfts'
       default:
@@ -38,7 +39,7 @@ const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
             }`}
             onClick={() => {
               setActive(item)
-              setIsOpen(false)
+              window.innerWidth < 990 && setIsOpen(false)
             }}
           >
             <Link href={generateLink(i)}>{item}</Link>
@@ -50,19 +51,24 @@ const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
 }
 
 const ButtonGroup = ({ setActive, setIsOpen, router }) => {
-  const hasConnected = true
-  return hasConnected ? (
+  const { connectWallet, currentAccount } = useContext(NFTContext)
+
+  return currentAccount ? (
     <Button
       btnName='Create'
       classStyles='mx-2 rounded-xl'
       handleClick={() => {
         setActive('')
-        setIsOpen(false)
+        window.length > 990 && setIsOpen(false)
         router.push('/create-nft')
       }}
     />
   ) : (
-    <Button btnName='Connect' classStyles='mx-2 rounded-xl' />
+    <Button
+      btnName='Connect'
+      classStyles='mx-2 rounded-xl'
+      handleClick={connectWallet}
+    />
   )
 }
 
@@ -74,7 +80,7 @@ const Navbar = () => {
 
   useEffect(() => {
     window.addEventListener('resize', () => {
-      window.innerWidth > 990 && setIsOpen(false)
+      window.innerWidth > 990 ? setIsOpen(false) : null
     })
     return () => {
       window.removeEventListener('resize', null)
@@ -143,7 +149,9 @@ const Navbar = () => {
       <div className='hidden md:flex ml-2'>
         {isOpen ? (
           <Image
-            className={theme === 'light' ? 'filter invert' : ''}
+            className={`cursor-pointer ${
+              theme === 'light' ? 'filter invert' : ''
+            }`}
             src={images.cross}
             objectFit='contain'
             width={22}
@@ -155,7 +163,9 @@ const Navbar = () => {
           />
         ) : (
           <Image
-            className={theme === 'light' ? 'filter invert' : ''}
+            className={`cursor-pointer ${
+              theme === 'light' ? 'filter invert' : ''
+            }`}
             src={images.menu}
             objectFit='contain'
             width={25}

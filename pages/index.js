@@ -1,16 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
+
+import { NFTContext } from '../context/NFTContext'
 
 import { Banner, CreatorCard, NFTCard } from '../components'
 import images from '../assets'
 import { makeId } from '../utils/makeId'
 
 const Home = () => {
+  const { fetchNFTs } = useContext(NFTContext)
   const [hideButton, setHideButton] = useState(false)
+  const [nfts, setNfts] = useState([])
   const parentRef = useRef(null)
   const scrollRef = useRef(null)
   const { theme } = useTheme()
+
+  useEffect(() => {
+    fetchNFTs().then(items => {
+      setNfts(items)
+      console.log(items)
+    })
+  }, [])
 
   const handleScroll = direction => {
     const { current } = scrollRef
@@ -113,6 +124,9 @@ const Home = () => {
             <div>SearchBar</div>
           </div>
           <div className='mt-3 w-full flex flex-wrap justify-start md:justify-center'>
+            {nfts.map(nft => {
+              return <NFTCard key={nft.marketId} nft={nft} />
+            })}
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => {
               return (
                 <NFTCard
@@ -120,8 +134,8 @@ const Home = () => {
                   nft={{
                     i,
                     name: `Nifty NFT ${i}`,
-                    sellerAddress: `0x${makeId(2)}...${makeId(4)}`,
-                    ownerAddress: `0x${makeId(2)}...${makeId(4)}`,
+                    seller: `0x${makeId(2)}...${makeId(4)}`,
+                    owner: `0x${makeId(2)}...${makeId(4)}`,
                     description: 'Cool NFT on sale!',
                     price: (10 - i * 0.53438).toFixed(2)
                   }}

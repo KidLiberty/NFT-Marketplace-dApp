@@ -43,8 +43,8 @@ export const NFTProvider = ({ children }) => {
     window.location.reload()
   }
 
-  const projectId = '2EZum75KPy9XY7mTOUDXHxNmgsT'
-  const projectSecret = '886090a87ca800eb2474708a571a9fa4'
+  const projectId = '2EdUjPaf5EdyYQ0N76xCSpZ7Qjn'
+  const projectSecret = 'bf9665acc547dc6abf25973eda88574a'
   const auth =
     'Basic ' + Buffer.from(`${projectId}:${projectSecret}`).toString('base64')
 
@@ -60,7 +60,7 @@ export const NFTProvider = ({ children }) => {
       })
 
       const added = await client.add({ content: file })
-      const url = `https://bs-openlake.infura-ipfs.io/ipfs/${added.cid}`
+      const url = `https://bs-nft-marketplace.infura-ipfs.io/ipfs/${added.cid}`
 
       return url
     } catch (err) {
@@ -85,7 +85,7 @@ export const NFTProvider = ({ children }) => {
       })
 
       const added = await client.add(data)
-      const url = `https://bs-openlake.infura-ipfs.io/ipfs/${added.cid}`
+      const url = `https://bs-nft-marketplace.infura-ipfs.io/ipfs/${added.cid}`
 
       await createSale(url, price)
 
@@ -113,13 +113,87 @@ export const NFTProvider = ({ children }) => {
     await transaction.wait()
   }
 
+  const fetchNFTs = async () => {
+    const provider = new ethers.providers.JsonRpcProvider()
+    const contract = fetchContract(provider) // Fetch ALL NFTs
+
+    const data = await contract.fetchMarketItems()
+
+    const items = await Promise.all(
+      data.map(async ({ marketId, seller, owner, price: unformattedPrice }) => {
+        const tokenURI = await contract.tokenURI(marketId)
+        const {
+          data: { image, name, description }
+        } = await axios.get(tokenURI)
+        const price = ethers.utils.formatUnits(
+          unformattedPrice.toString(),
+          'ether'
+        )
+
+        return {
+          price,
+          marketId: marketId.toNumber(),
+          seller,
+          owner,
+          image,
+          name,
+          description,
+          tokenURI
+        }
+      })
+    )
+
+    return items
+  }
+
+  const fetchMyNFTsOrListedNFTs = async type => {
+    const web3Modal = new Web3Modal()
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)
+    const signer = provider.getSigner() // Address of NFT creator
+
+    const contract = fetchContract(signer)
+
+    const data =
+      type === 'fetchItemsListed'
+        ? await contract.fetchItemsListed()
+        : await contract.fetchMyNFTs()
+
+    const items = await Promise.all(
+      data.map(async ({ marketId, seller, owner, price: unformattedPrice }) => {
+        const tokenURI = await contract.tokenURI(marketId)
+        const {
+          data: { image, name, description }
+        } = await axios.get(tokenURI)
+        const price = ethers.utils.formatUnits(
+          unformattedPrice.toString(),
+          'ether'
+        )
+
+        return {
+          price,
+          marketId: marketId.toNumber(),
+          seller,
+          owner,
+          image,
+          name,
+          description,
+          tokenURI
+        }
+      })
+    )
+    return items
+  }
+
   const NFTContextValue = {
     nftCurrency,
     connectWallet,
     currentAccount,
     uploadToIPFS,
     createNFT,
-    createSale
+    createSale,
+    fetchNFTs,
+    fetchMyNFTsOrListedNFTs
   }
 
   return (
