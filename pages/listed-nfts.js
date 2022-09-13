@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 
 import { NFTContext } from '../context/NFTContext'
-
 import { Loader, NFTCard } from '../components'
 
 const listedNFTs = () => {

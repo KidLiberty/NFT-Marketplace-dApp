@@ -29,8 +29,8 @@ contract NFTMarketplace is ERC721URIStorage {
 
     event MarketItemCreated (
         uint256 indexed tokenId,
-        address payable seller,
-        address payable owner,
+        address seller,
+        address owner,
         uint256 price,
         bool sold
     );
@@ -45,7 +45,7 @@ contract NFTMarketplace is ERC721URIStorage {
       listingPrice = _listingPrice;
     }
 
-    function getListingPrice() public view returns(uint256 _listingPrice) {
+    function getListingPrice() public view returns (uint256) {
         return listingPrice;
     }
 
