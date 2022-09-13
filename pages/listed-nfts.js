@@ -42,7 +42,7 @@ const listedNFTs = () => {
           </h2>
           <div className='mt-3 w-full flex flex-wrap justify-start md:justify-center'>
             {nfts.map(nft => {
-              return <NFTCard key={nft.marketId} nft={nft} />
+              return <NFTCard key={nft.tokenId} nft={nft} />
             })}
           </div>
         </div>
