@@ -50,6 +50,8 @@ const PaymentBodyCmp = ({ nft, nftCurrency }) => (
 )
 
 const NFTDetails = () => {
+  const { currentAccount, nftCurrency, buyNFT, isLoadingNFT } =
+    useContext(NFTContext)
   const [isLoading, setIsLoading] = useState(true)
   const [nft, setNft] = useState({
     image: '',
@@ -61,7 +63,6 @@ const NFTDetails = () => {
   })
   const [paymentModel, setPaymentModal] = useState(false)
   const [successModal, setSuccessModal] = useState(false)
-  const { currentAccount, nftCurrency, buyNFT } = useContext(NFTContext)
   const router = useRouter()
 
   useEffect(() => {
@@ -218,6 +219,20 @@ const NFTDetails = () => {
             </div>
           }
           handleClose={() => setSuccessModal(false)}
+        />
+      )}
+
+      {isLoadingNFT && (
+        <Modal
+          header='Buying NFT...'
+          body={
+            <div className='flexCenter flex-col text-center'>
+              <div className='relative w-52 h-52'>
+                <Loader />
+              </div>
+            </div>
+          }
+          handleClose={() => setPaymentModal(false)}
         />
       )}
     </div>

@@ -34,7 +34,7 @@ contract NFTMarketplace is ERC721URIStorage {
     );
 
     constructor() ERC721("Metaverse Tokens", "METT") {
-     owner = payable(msg.sender);
+      owner = payable(msg.sender);
     }
 
     function updateListingPrice(uint _listingPrice) public payable {
@@ -53,11 +53,13 @@ contract NFTMarketplace is ERC721URIStorage {
       _mint(msg.sender, newTokenId);
       _setTokenURI(newTokenId, tokenURI);
       createMarketItem(newTokenId, price);
-      
       return newTokenId;
     }
 
-    function createMarketItem(uint256 tokenId, uint256 price) private {
+    function createMarketItem(
+      uint256 tokenId,
+      uint256 price
+    ) private {
       require(price > 0, "Price must be at least 1 wei");
       require(msg.value == listingPrice, "Price must be equal to listing price");
 
@@ -70,32 +72,37 @@ contract NFTMarketplace is ERC721URIStorage {
       );
 
       _transfer(msg.sender, address(this), tokenId);
-      emit MarketItemCreated(tokenId, msg.sender, address(this), price, false);
+      emit MarketItemCreated(
+        tokenId,
+        msg.sender,
+        address(this),
+        price,
+        false
+      );
     }
 
     function resellToken(uint256 tokenId, uint256 price) public payable {
-      require(idToMarketItem[tokenId].owner == msg.sender, "Only item owner can perform this operation.");
-      require(msg.value == listingPrice, "Price must be equal to listing price.");
-      idToMarketItem[tokenId].sold == false;
-      idToMarketItem[tokenId].price == price;
-      idToMarketItem[tokenId].seller == payable(msg.sender);
-      idToMarketItem[tokenId].owner == address(this);
-
+      require(idToMarketItem[tokenId].owner == msg.sender, "Only item owner can perform this operation");
+      require(msg.value == listingPrice, "Price must be equal to listing price");
+      idToMarketItem[tokenId].sold = false;
+      idToMarketItem[tokenId].price = price;
+      idToMarketItem[tokenId].seller = payable(msg.sender);
+      idToMarketItem[tokenId].owner = payable(address(this));
       _itemsSold.decrement();
+
       _transfer(msg.sender, address(this), tokenId);
     }
 
-    function createMarketSale(uint256 tokenId) public payable {
+    function createMarketSale(
+      uint256 tokenId
+      ) public payable {
       uint price = idToMarketItem[tokenId].price;
       require(msg.value == price, "Please submit the asking price in order to complete the purchase");
       idToMarketItem[tokenId].owner = payable(msg.sender);
       idToMarketItem[tokenId].sold = true;
-      // address(0) means it doesn't belong to any specific wallet (on marketplace)
       idToMarketItem[tokenId].seller = payable(address(0));
-      
       _itemsSold.increment();
       _transfer(address(this), msg.sender, tokenId);
-
       payable(owner).transfer(listingPrice);
       payable(idToMarketItem[tokenId].seller).transfer(msg.value);
     }
