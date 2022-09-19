@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Web3Modal from 'web3modal'
-import { ethers, Signer } from 'ethers'
+import { ethers } from 'ethers'
 import axios from 'axios'
 import { create } from 'ipfs-http-client'
 
@@ -92,7 +92,7 @@ export const NFTProvider = ({ children }) => {
 
       router.push('/')
     } catch (err) {
-      console.log('Error uploading file to IPFS.')
+      console.log('Error creating NFT.')
     }
   }
 

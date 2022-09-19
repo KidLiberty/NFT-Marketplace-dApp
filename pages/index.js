@@ -165,7 +165,7 @@ const Home = () => {
                           src={images.right}
                           layout='fill'
                           objectFit='contain'
-                          alt='right'
+                          alt='right_arrow'
                         />
                       </div>
                     </>
